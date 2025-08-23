@@ -61,7 +61,7 @@ export default function InteractiveResume() {
 
   const copy: Record<Lang, Copy> = useMemo(() => ({
     zh: {
-      name: "张紫珺 Jamie Zhang",
+      name: "桓语 Zedz",
       role: "客户体验 / 运营 / 内容｜No‑Code & 自动化爱好者",
       tagline:
         "专业客服与商家运营背景，擅长文件与数据管理、AI 辅助内容与小程序搭建。能把复杂事物拆简单、落实到 SOP 并持续优化。",
@@ -294,7 +294,7 @@ export default function InteractiveResume() {
       ],
     },
     en: {
-      name: "Jamie Zhang",
+      name: "Zedz",
       role: "Customer Experience & Operations · Content · No‑Code / Automation",
       tagline:
         "CX/ops generalist with strong documentation and data hygiene. Builds lean workflows, no‑code mini‑apps, and content funnels that reduce support load.",
@@ -508,6 +508,20 @@ export default function InteractiveResume() {
 
   const t = copy[lang];
 
+  // Animation variants
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 40 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+  };
+  const stagger = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
+  };
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' } },
+  };
+
   // keyboard navigation helpers
   const getActiveSectionId = () => {
     const thresholds = sectionRefs.current.map((el) => el?.getBoundingClientRect().top ?? Infinity);
@@ -588,7 +602,7 @@ export default function InteractiveResume() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `jamie-zhang-resume-${lang}.json`;
+    a.download = `zedz-resume-${lang}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -634,7 +648,7 @@ export default function InteractiveResume() {
               {sec.id === "edu" && <Education copy={t} cardBg={cardBg} cardBorder={cardBorder} lang={lang} />}
               {sec.id === "contact" && <Contact copy={t} cardBg={cardBg} cardBorder={cardBorder} lang={lang} />}
             </div>
-          </section>
+          </motion.section>
         ))}
       </main>
 
@@ -646,7 +660,7 @@ export default function InteractiveResume() {
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
       `}</style>
-    </div>
+    </motion.div>
   );
 }
 
@@ -685,7 +699,7 @@ function HUD({
           </a>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -712,12 +726,18 @@ function Avatar({ progress, theme }: { progress: number; theme: "day" | "night" 
 
 function LevelBadge({ index, label, theme }: { index: number; label: string; theme: "day" | "night" }) {
   return (
-    <div className="mb-6">
+    <motion.div
+      className="mb-6"
+      initial={{ scale: 0.95, opacity: 0 }}
+      whileInView={{ scale: 1, opacity: 1 }}
+      viewport={{ once: false, amount: 0.6 }}
+      transition={{ duration: 0.4 }}
+    >
       <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border ${theme === "day" ? "bg-white/70 border-slate-200" : "bg-slate-900/50 border-slate-700"}`}>
         <Rocket className="w-4 h-4" />
         <span className="text-xs font-semibold uppercase tracking-wider">{label}</span>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -763,7 +783,7 @@ function Skills({ copy, cardBg, cardBorder }: { copy: Copy; cardBg: string; card
           </ul>
         </Card>
       ))}
-    </div>
+    </motion.div>
   );
 }
 
@@ -784,7 +804,7 @@ function Experience({ copy, cardBg, cardBorder }: { copy: Copy; cardBg: string; 
           </ul>
         </Card>
       ))}
-    </div>
+    </motion.div>
   );
 }
 
@@ -813,7 +833,7 @@ function Projects({ copy, cardBg, cardBorder }: { copy: Copy; cardBg: string; ca
           )}
         </Card>
       ))}
-    </div>
+    </motion.div>
   );
 }
 
@@ -860,7 +880,7 @@ function Education({ copy, cardBg, cardBorder, lang }: { copy: Copy; cardBg: str
           </>
         )}
       </Card>
-    </div>
+    </motion.div>
   );
 }
 
@@ -892,7 +912,7 @@ function Hint({ text, className = "" }: { text: string; className?: string }) {
       <ArrowUp className="w-3 h-3" />
       <ArrowDown className="w-3 h-3" />
       <span>{text}</span>
-    </div>
+    </motion.div>
   );
 }
 
@@ -901,8 +921,8 @@ function Footer({ theme }: { theme: "day" | "night" }) {
     <div className="footer py-8">
       <div className="max-w-5xl mx-auto px-4 text-center text-xs opacity-70">
         <p>Built with React · Framer Motion · Tailwind · Lucide. Inspired by Robby Leonardi's interactive resume.</p>
-        <p>© {new Date().getFullYear()} Jamie Zhang. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Zedz. All rights reserved.</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
