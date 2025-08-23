@@ -1,7 +1,7 @@
 
-# Jamie Resume (Vite + React + TS + Tailwind)
+# Zedz Resume (Vite + React + TS + Tailwind)
 
-An interactive resume for **Jamie Zhang**, inspired by Robby Leonardi's style.
+An interactive resume for **Zedz**, inspired by Robby Leonardi's style.
 
 ## Quick Start
 
@@ -35,7 +35,7 @@ The production output is in `dist/`.
   - Email: `mailto:jamiezzj@gmail.com`
   - WeChat: `huanyuhein` (kept as text)
   - X: `https://x.com/ZedzDrm`
-  - LinkedIn: `https://www.linkedin.com/in/ooojamieooo`
+  - LinkedIn: `https://www.linkedin.com/in/oooZedzooo`
 
 ## Tech
 
