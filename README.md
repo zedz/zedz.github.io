@@ -2,7 +2,7 @@
 # Zedz Resume (Vite + React + TS)
 
 - L3 privacy: noindex headers/meta, robots.txt disallow, email obfuscation, WeChat hidden
-- Minimal public view: only Levels 1 & 2 by default; append `?code=zedz2025` to unlock full resume
+- Minimal public view: only Levels 1 & 2 by default; append `?code=****2025` to unlock full resume
 
 ## Quick Start (local)
 npm i
