@@ -39,12 +39,17 @@ type Copy = {
   extras?: string[];
 };
 
+// Email obfuscation (weak but deters simple scrapers)
+function obfuscateEmail(e: string) {
+  return e.replace(/@/g, " [at] ").replace(/\./g, " [dot] ");
+}
+
 export default function InteractiveResume() {
   const [lang, setLang] = useState<Lang>("zh");
   const [theme, setTheme] = useState<"day" | "night">("day");
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
 
-  // Data copy (names already updated: 桓语 / Zedz)
+  // Data
   const copy: Record<Lang, Copy> = useMemo(() => ({
     zh: {
       name: "桓语 Zedz",
@@ -53,7 +58,7 @@ export default function InteractiveResume() {
         "专业客服与商家运营背景，擅长文件与数据管理、AI 辅助内容与小程序搭建。能把复杂事物拆简单、落实到 SOP 并持续优化。",
       contacts: [
         { label: "Email", value: "jamiezzj@gmail.com", href: "mailto:jamiezzj@gmail.com", icon: Mail },
-        { label: "WeChat", value: "huanyuhein", icon: Globe },
+        { label: "WeChat", value: "邮件/私信后提供", icon: Globe },
         { label: "X", value: "@ZedzDrm", href: "https://x.com/ZedzDrm", icon: Globe },
         { label: "LinkedIn", value: "@ooojamieooo", href: "https://www.linkedin.com/in/ooojamieooo", icon: Globe },
         { label: "Location", value: "Changsha, China · Remote‑friendly", icon: Globe },
@@ -123,7 +128,7 @@ export default function InteractiveResume() {
         "CX/ops generalist with strong documentation and data hygiene. Builds lean workflows, no‑code mini‑apps, and content funnels that reduce support load.",
       contacts: [
         { label: "Email", value: "jamiezzj@gmail.com", href: "mailto:jamiezzj@gmail.com", icon: Mail },
-        { label: "WeChat", value: "huanyuhein", icon: Globe },
+        { label: "WeChat", value: "By request via email/DM", icon: Globe },
         { label: "X", value: "@ZedzDrm", href: "https://x.com/ZedzDrm", icon: Globe },
         { label: "LinkedIn", value: "@ooojamieooo", href: "https://www.linkedin.com/in/ooojamieooo", icon: Globe },
         { label: "Location", value: "Changsha, China · Remote‑friendly", icon: Globe },
@@ -190,6 +195,14 @@ export default function InteractiveResume() {
 
   const t = copy[lang];
 
+  // L3 Minimal View: only show Level 1 & 2 unless unlocked
+  const params = new URLSearchParams(window.location.search);
+  const isUnlocked = params.get('code') === 'zedz2025';
+  const sectionsToRender = React.useMemo(
+    () => (isUnlocked ? t.sections : t.sections.filter(s => s.id === 'about' || s.id === 'skills')),
+    [isUnlocked, t]
+  );
+
   // Animation variants
   const sectionVariants = {
     hidden: { opacity: 0, y: 40 },
@@ -246,7 +259,7 @@ export default function InteractiveResume() {
         setLang={setLang}
         theme={theme}
         setTheme={setTheme}
-        sections={t.sections}
+        sections={sectionsToRender}
         progress={progress}
       />
 
@@ -269,7 +282,7 @@ export default function InteractiveResume() {
       </header>
 
       <main>
-        {t.sections.map((sec, i) => (
+        {sectionsToRender.map((sec, i) => (
           <motion.section
             key={sec.id}
             id={sec.id}
@@ -284,10 +297,10 @@ export default function InteractiveResume() {
               <LevelBadge index={i} label={sec.label} theme={theme} />
               {sec.id === "about" && <About copy={t} cardBg={cardBg} cardBorder={cardBorder} />}
               {sec.id === "skills" && <Skills copy={t} cardBg={cardBg} cardBorder={cardBorder} />}
-              {sec.id === "exp" && <Experience copy={t} cardBg={cardBg} cardBorder={cardBorder} />}
-              {sec.id === "projects" && <Projects copy={t} cardBg={cardBg} cardBorder={cardBorder} />}
-              {sec.id === "edu" && <Education copy={t} cardBg={cardBg} cardBorder={cardBorder} lang={lang} />}
-              {sec.id === "contact" && <Contact copy={t} cardBg={cardBg} cardBorder={cardBorder} lang={lang} />}
+              {sec.id === "exp" && isUnlocked && <Experience copy={t} cardBg={cardBg} cardBorder={cardBorder} />}
+              {sec.id === "projects" && isUnlocked && <Projects copy={t} cardBg={cardBg} cardBorder={cardBorder} />}
+              {sec.id === "edu" && isUnlocked && <Education copy={t} cardBg={cardBg} cardBorder={cardBorder} lang={lang} />}
+              {sec.id === "contact" && isUnlocked && <Contact copy={t} cardBg={cardBg} cardBorder={cardBorder} lang={lang} />}
             </div>
           </motion.section>
         ))}
@@ -387,7 +400,10 @@ function About({ copy, cardBg, cardBorder }: { copy: Copy; cardBg: string; cardB
         {copy.contacts.map((c, i) => (
           <div key={i} className="flex items-center gap-2 text-sm">
             <c.icon className="w-4 h-4 opacity-80" />
-            {c.href ? (<a href={c.href} className="underline underline-offset-4" target="_blank" rel="noreferrer">{c.value}</a>) : (<span>{c.value}</span>)}
+            {c.label === "Email"
+              ? (<span>{obfuscateEmail(c.value)}</span>)
+              : (c.href ? (<a href={c.href} className="underline underline-offset-4" target="_blank" rel="noreferrer">{c.value}</a>) : (<span>{c.value}</span>))
+            }
           </div>
         ))}
       </div>
@@ -397,6 +413,7 @@ function About({ copy, cardBg, cardBorder }: { copy: Copy; cardBg: string; cardB
 }
 
 function Skills({ copy, cardBg, cardBorder }: { copy: Copy; cardBg: string; cardBorder: string }) {
+  const isUnlocked = new URLSearchParams(window.location.search).get('code') === 'zedz2025';
   return (
     <motion.div className="grid md:grid-cols-2 gap-4" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } } }} initial="hidden" whileInView="show" viewport={{ once:false, amount:0.2 }}>
       {copy.skills.map((s, i) => (
@@ -412,6 +429,11 @@ function Skills({ copy, cardBg, cardBorder }: { copy: Copy; cardBg: string; card
           </Card>
         </motion.div>
       ))}
+      {!isUnlocked && (
+        <p className="mt-6 text-xs opacity-70 col-span-full">
+          这是简化公开版（仅展示关卡 1 & 2）。如需查看完整履历，请邮件联系：jamiezzj [at] gmail [dot] com
+        </p>
+      )}
     </motion.div>
   );
 }
@@ -517,7 +539,10 @@ function Contact({ copy, cardBg, cardBorder, lang }: { copy: Copy; cardBg: strin
           <div key={i} className="flex items-center gap-2 text-sm">
             <c.icon className="w-4 h-4 opacity-80" />
             <span className="font-medium">{c.label}：</span>
-            {c.href ? (<a href={c.href} target="_blank" rel="noreferrer" className="underline underline-offset-4">{c.value}</a>) : (<span>{c.value}</span>)}
+            {c.label === "Email"
+              ? (<span>{obfuscateEmail(c.value)}</span>)
+              : (c.href ? (<a href={c.href} target="_blank" rel="noreferrer" className="underline underline-offset-4">{c.value}</a>) : (<span>{c.value}</span>))
+            }
           </div>
         ))}
       </div>
